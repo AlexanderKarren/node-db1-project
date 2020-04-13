@@ -5,8 +5,11 @@ const db = require("../data/dbConfig.js");
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    db('accounts').then(response => res.status(200).json({ data: response }))
-    .catch(error => res.status(500).json({ error: error.message }));
+        db('accounts')
+        .limit(req.query.limit || '*')
+        .orderBy(req.query.sortby || "id", req.query.sortdir || "asc")
+        .then(response => res.status(200).json({ data: response }))
+        .catch(error => res.status(500).json({ error: error.message }));
 })
 
 router.get('/:id', validateAccountId, (req, res) => {
@@ -35,6 +38,11 @@ router.delete('/:id', validateAccountId, (req, res) => {
         db('accounts').where('id', req.params.id).del().then(delRes => res.status(200).json({ data: findRes[0] }))
         .catch(error => res.status(500).json({ error: error.message }));
     })
+    .catch(error => res.status(500).json({ error: error.message }));
+})
+
+router.get('/city-count', (req, res) => {
+    db('accounts').then(response => res.status(200).json({ data: response }))
     .catch(error => res.status(500).json({ error: error.message }));
 })
 
